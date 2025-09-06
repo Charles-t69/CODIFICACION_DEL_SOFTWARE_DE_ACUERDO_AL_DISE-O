@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados: Recursos - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background: rgba(255, 255, 255, 0.95);">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard-admin">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+            </a>
+            <span class="navbar-text">Admin Panel - Recursos de Aprendizaje</span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="stats-card">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <h3 id="totalResources">0</h3>
+                    <p class="text-muted">Total Recursos</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 id="avgRating">0</h3>
+                    <p class="text-muted">Rating Promedio</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 id="topResourceType">-</h3>
+                    <p class="text-muted">Tipo Popular</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <h3 id="topLevel">-</h3>
+                    <p class="text-muted">Nivel Común</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h4 class="mb-4"><i class="fas fa-book me-2"></i>Recursos de Aprendizaje</h4>
+            
+            <div class="table-responsive">
+                <table class="table table-hover" id="resourcesTable">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Recurso</th>
+                            <th>Tipo</th>
+                            <th>Nivel</th>
+                            <th>Rating</th>
+                            <th>URL</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Código similar para recursos (implementar loadResourcesData, etc.)
+        console.log('Vista de resultados de recursos cargada');
+    </script>
+</body>
+</html>

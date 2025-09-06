@@ -1,0 +1,313 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../config/database');
+
+// ================= RUTAS DE USUARIO (FORMULARIOS) =================
+
+// Submit formulario 1: Experiencias de Coding
+router.post('/coding', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const { programming_language, coding_environment, project_type, difficulty_level, description, favorite_moment } = req.body;
+    
+    const query = `INSERT INTO coding_experiences (user_id, programming_language, coding_environment, project_type, difficulty_level, description, favorite_moment) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [req.session.user.id, programming_language, coding_environment, project_type, difficulty_level, description, favorite_moment], 
+        (err, result) => {
+            if (err) {
+                console.error('Error inserting coding experience:', err);
+                return res.status(500).json({ error: 'Error guardando datos' });
+            }
+            res.json({ message: 'Experiencia guardada exitosamente', id: result.insertId });
+        }
+    );
+});
+
+// Submit formulario 2: Música para Programar
+router.post('/music', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const { music_genre, favorite_artist, coding_playlist, productivity_level, music_platform, recommendations } = req.body;
+    
+    const query = `INSERT INTO coding_music (user_id, music_genre, favorite_artist, coding_playlist, productivity_level, music_platform, recommendations) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [req.session.user.id, music_genre, favorite_artist, coding_playlist, productivity_level, music_platform, recommendations], 
+        (err, result) => {
+            if (err) {
+                console.error('Error inserting music data:', err);
+                return res.status(500).json({ error: 'Error guardando datos' });
+            }
+            res.json({ message: 'Datos de música guardados', id: result.insertId });
+        }
+    );
+});
+
+// Submit formulario 3: Proyectos Personales
+router.post('/projects', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const { project_name, technologies_used, project_status, project_url, challenges_faced, lessons_learned } = req.body;
+    
+    const query = `INSERT INTO personal_projects (user_id, project_name, technologies_used, project_status, project_url, challenges_faced, lessons_learned) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [req.session.user.id, project_name, technologies_used, project_status, project_url, challenges_faced, lessons_learned], 
+        (err, result) => {
+            if (err) {
+                console.error('Error inserting project data:', err);
+                return res.status(500).json({ error: 'Error guardando datos' });
+            }
+            res.json({ message: 'Proyecto guardado', id: result.insertId });
+        }
+    );
+});
+
+// Submit formulario 4: Recursos de Aprendizaje
+router.post('/resources', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const { resource_type, resource_name, resource_url, skill_level, rating, review } = req.body;
+    
+    const query = `INSERT INTO learning_resources (user_id, resource_type, resource_name, resource_url, skill_level, rating, review) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [req.session.user.id, resource_type, resource_name, resource_url, skill_level, rating, review], 
+        (err, result) => {
+            if (err) {
+                console.error('Error inserting resource data:', err);
+                return res.status(500).json({ error: 'Error guardando datos' });
+            }
+            res.json({ message: 'Recurso guardado', id: result.insertId });
+        }
+    );
+});
+
+// Submit formulario 5: Comunidad
+router.post('/community', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'No autenticado' });
+    }
+
+    const { collaboration_interest, preferred_techs, availability, communication_style, looking_for_help, can_help_with } = req.body;
+    
+    const query = `INSERT INTO community (user_id, collaboration_interest, preferred_techs, availability, communication_style, looking_for_help, can_help_with) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [req.session.user.id, collaboration_interest, preferred_techs, availability, communication_style, looking_for_help, can_help_with], 
+        (err, result) => {
+            if (err) {
+                console.error('Error inserting community data:', err);
+                return res.status(500).json({ error: 'Error guardando datos' });
+            }
+            res.json({ message: 'Datos de comunidad guardados', id: result.insertId });
+        }
+    );
+});
+
+// ================= RUTAS DE ADMINISTRACIÓN =================
+
+// Obtener todas las experiencias de coding (Admin)
+router.get('/admin/coding', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = `SELECT ce.*, u.username 
+                   FROM coding_experiences ce 
+                   JOIN users u ON ce.user_id = u.id 
+                   ORDER BY ce.created_at DESC`;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching coding data:', err);
+            return res.status(500).json({ error: 'Error obteniendo datos' });
+        }
+        res.json(results);
+    });
+});
+
+// Eliminar una experiencia de coding (Admin)
+router.delete('/admin/coding/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = 'DELETE FROM coding_experiences WHERE id = ?';
+    
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error deleting coding entry:', err);
+            return res.status(500).json({ error: 'Error eliminando dato' });
+        }
+        res.json({ message: 'Entrada eliminada correctamente' });
+    });
+});
+
+// Obtener datos de música (Admin)
+router.get('/admin/music', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = `SELECT cm.*, u.username 
+                   FROM coding_music cm 
+                   JOIN users u ON cm.user_id = u.id 
+                   ORDER BY cm.created_at DESC`;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching music data:', err);
+            return res.status(500).json({ error: 'Error obteniendo datos' });
+        }
+        res.json(results);
+    });
+});
+
+// Obtener datos de proyectos (Admin)
+router.get('/admin/projects', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = `SELECT pp.*, u.username 
+                   FROM personal_projects pp 
+                   JOIN users u ON pp.user_id = u.id 
+                   ORDER BY pp.created_at DESC`;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching projects data:', err);
+            return res.status(500).json({ error: 'Error obteniendo datos' });
+        }
+        res.json(results);
+    });
+});
+
+// Obtener datos de recursos (Admin)
+router.get('/admin/resources', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = `SELECT lr.*, u.username 
+                   FROM learning_resources lr 
+                   JOIN users u ON lr.user_id = u.id 
+                   ORDER BY lr.created_at DESC`;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching resources data:', err);
+            return res.status(500).json({ error: 'Error obteniendo datos' });
+        }
+        res.json(results);
+    });
+});
+
+// Obtener datos de comunidad (Admin)
+router.get('/admin/community', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = `SELECT c.*, u.username 
+                   FROM community c 
+                   JOIN users u ON c.user_id = u.id 
+                   ORDER BY c.created_at DESC`;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching community data:', err);
+            return res.status(500).json({ error: 'Error obteniendo datos' });
+        }
+        res.json(results);
+    });
+});
+
+// Eliminar todos los datos de una tabla (Admin)
+router.delete('/admin/:table', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const validTables = ['coding_experiences', 'coding_music', 'personal_projects', 'learning_resources', 'community'];
+    const table = req.params.table;
+
+    if (!validTables.includes(table)) {
+        return res.status(400).json({ error: 'Tabla no válida' });
+    }
+
+    const query = `DELETE FROM ${table}`;
+    
+    db.query(query, (err, result) => {
+        if (err) {
+            console.error('Error deleting all entries:', err);
+            return res.status(500).json({ error: 'Error eliminando datos' });
+        }
+        res.json({ message: `Todos los datos de ${table} eliminados`, affectedRows: result.affectedRows });
+    });
+});
+
+// Agrega esto junto con las otras rutas de admin:
+
+// Eliminar proyecto (Admin)
+router.delete('/admin/projects/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = 'DELETE FROM personal_projects WHERE id = ?';
+    
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error deleting project:', err);
+            return res.status(500).json({ error: 'Error eliminando proyecto' });
+        }
+        res.json({ message: 'Proyecto eliminado correctamente' });
+    });
+});
+
+// Eliminar recurso (Admin)
+router.delete('/admin/resources/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = 'DELETE FROM learning_resources WHERE id = ?';
+    
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error deleting resource:', err);
+            return res.status(500).json({ error: 'Error eliminando recurso' });
+        }
+        res.json({ message: 'Recurso eliminado correctamente' });
+    });
+});
+
+// Eliminar entrada comunidad (Admin)
+router.delete('/admin/community/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = 'DELETE FROM community WHERE id = ?';
+    
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error deleting community entry:', err);
+            return res.status(500).json({ error: 'Error eliminando entrada' });
+        }
+        res.json({ message: 'Entrada de comunidad eliminada' });
+    });
+});
+
+module.exports = router;
