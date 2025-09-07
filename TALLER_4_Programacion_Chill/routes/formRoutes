@@ -276,7 +276,24 @@ router.delete('/admin/projects/:id', (req, res) => {
     });
 });
 
-// Eliminar recurso (Admin)
+// Eliminar entrada de música (Admin)
+router.delete('/admin/music/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const query = 'DELETE FROM coding_music WHERE id = ?';
+    
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) {
+            console.error('Error deleting music entry:', err);
+            return res.status(500).json({ error: 'Error eliminando dato' });
+        }
+        res.json({ message: 'Entrada de música eliminada' });
+    });
+});
+
+// Eliminar entrada de recursos (Admin)
 router.delete('/admin/resources/:id', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
         return res.status(403).json({ error: 'Acceso denegado' });
@@ -286,14 +303,14 @@ router.delete('/admin/resources/:id', (req, res) => {
     
     db.query(query, [req.params.id], (err, result) => {
         if (err) {
-            console.error('Error deleting resource:', err);
-            return res.status(500).json({ error: 'Error eliminando recurso' });
+            console.error('Error deleting resource entry:', err);
+            return res.status(500).json({ error: 'Error eliminando dato' });
         }
-        res.json({ message: 'Recurso eliminado correctamente' });
+        res.json({ message: 'Entrada de recurso eliminada' });
     });
 });
 
-// Eliminar entrada comunidad (Admin)
+// Eliminar entrada de comunidad (Admin)
 router.delete('/admin/community/:id', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
         return res.status(403).json({ error: 'Acceso denegado' });
@@ -304,7 +321,7 @@ router.delete('/admin/community/:id', (req, res) => {
     db.query(query, [req.params.id], (err, result) => {
         if (err) {
             console.error('Error deleting community entry:', err);
-            return res.status(500).json({ error: 'Error eliminando entrada' });
+            return res.status(500).json({ error: 'Error eliminando dato' });
         }
         res.json({ message: 'Entrada de comunidad eliminada' });
     });
